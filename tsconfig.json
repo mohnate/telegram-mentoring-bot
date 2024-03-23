@@ -17,8 +17,9 @@
       "typeRoots": [
           "node_modules/@types"
       ],
-      "sourceMap": false,
-      "baseUrl": "./"
+      "baseUrl": "./",
+      "emitDecoratorMetadata": true,
+      "sourceMap": true
   },
   "files": [
       "index.ts"

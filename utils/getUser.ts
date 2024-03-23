@@ -2,7 +2,7 @@ import { User } from "types/documents";
 import { AsyncUtilsFunction } from "types/utils";
 
 type GetUserOptions = {
-  id: string;
+  id: string | number;
   state?: Record<string, unknown>;
 };
 
