@@ -19,7 +19,8 @@
       ],
       "baseUrl": "./",
       "emitDecoratorMetadata": true,
-      "sourceMap": true
+      "sourceMap": true,
+    "strictPropertyInitialization": false,
   },
   "files": [
       "index.ts"

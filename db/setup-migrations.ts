@@ -8,7 +8,6 @@ export const setupMigrations = async () => {
   const tableCountQuery = await AppDataSource.query(
     "select count(*) from information_schema.tables where table_schema = 'public';"
   );
-  await AppDataSource.showMigrations();
   if (parseInt(tableCountQuery[0].count, 10) > 0) {
     const migrationsCountQuery = await AppDataSource.query(
       "select count(*) from migrations;"

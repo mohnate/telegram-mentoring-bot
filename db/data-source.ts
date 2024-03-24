@@ -1,16 +1,20 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { User } from "./entity/User";
+import { WhitelistedMentor } from "./entity/WhitelistedMentors";
+import { Link } from "./entity/Links";
+import config from "../config";
 
 export const AppDataSource = new DataSource({
-  type: "mysql",
-  host: process.env.DB_HOST,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  type: "postgres",
+  host: config.DB_HOST,
+  username: config.DB_USER,
+  password: config.DB_PASSWORD,
+  database: config.DB_NAME,
+  port: config.DB_PORT,
   synchronize: false,
   logging: false,
-  entities: [User],
+  entities: [User, WhitelistedMentor, Link],
   migrations: [__dirname + "/migration/**/*.{js,ts}"],
   migrationsTableName: "migrations",
   subscribers: [],

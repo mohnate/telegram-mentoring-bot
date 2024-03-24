@@ -1,5 +1,4 @@
 import { Command, CommandInteraction } from "../types/commands";
-import { getDb } from "../utils/db";
 import getUser from "../utils/getUser";
 
 export const commandSettings: Command = {
@@ -12,8 +11,11 @@ export const commandSettings: Command = {
 
 async function handler({ telegramUser }: CommandInteraction) {
   if (!telegramUser) throw new Error("No telegram user found in interaction");
-  const user = await getUser({ id: telegramUser.id });
+  const user = await getUser(telegramUser.id);
   if (!user) throw new Error("No profile yet! Create one with /setup-profile.");
-  const { connection } = await getDb();
-  console.log(connection);
+  const profile = user.profile;
+  const profileString = Object.keys(profile)
+    .map((key) => `${key}: ${profile[key]}`)
+    .join("\n");
+  return `Your profile:\n${profileString}`;
 }

@@ -4,7 +4,7 @@ export type Command = {
   name: string;
   regex: RegExp;
   description: string;
-  handler: (interaction: CommandInteraction) => Promise<void>;
+  handler: (interaction: CommandInteraction) => Promise<string>;
   help?: string;
 };
 

@@ -1,18 +1,16 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { UserProfile } from "types/db";
 
 @Entity({
   name: "user",
 })
 export class User {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  firstName!: string;
+  isMentor: boolean;
 
-  @Column()
-  lastName!: string;
-
-  @Column()
-  age!: number;
+  @Column("jsonb", { nullable: false, default: {} })
+  profile: UserProfile;
 }

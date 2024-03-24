@@ -1,16 +1,15 @@
-import { User } from "types/documents";
+import { UserRepository } from "../db";
+import { User } from "../db/entity/User";
 import { AsyncUtilsFunction } from "types/utils";
 
-type GetUserOptions = {
-  id: string | number;
-  state?: Record<string, unknown>;
-};
-
-const getUser: AsyncUtilsFunction<GetUserOptions, User> = async ({
-  id,
-  state = {},
-}) => {
-  return {};
+const getUser: AsyncUtilsFunction<number, User | null> = async (id) => {
+  if (!id) {
+    throw new Error("User ID is required");
+  }
+  const user = UserRepository.findOne({
+    where: { id },
+  });
+  return user;
 };
 
 export default getUser;

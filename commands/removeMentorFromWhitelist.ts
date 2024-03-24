@@ -1,13 +1,12 @@
 import { Command, CommandInteraction } from "../types/commands";
 
 export const commandSettings: Command = {
-  name: "setup_profile",
-  regex: /\/setup_profile/,
-  description: "Setup your profile",
+  name: "remove_mentor_from_whitelist",
+  regex: /\/remove_mentor_from_whitelist/,
+  description: "Remove a mentor from whitelist",
   handler,
-  help: "Edit your profile",
 };
 
 async function handler(interaction: CommandInteraction) {
-  return "Setup profile handler";
+  return "Edit profile handler";
 }

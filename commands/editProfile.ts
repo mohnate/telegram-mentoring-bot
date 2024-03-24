@@ -9,5 +9,5 @@ export const commandSettings: Command = {
 };
 
 async function handler(interaction: CommandInteraction) {
-  console.log("Edit profile handler", interaction);
+  return "Edit profile handler";
 }
