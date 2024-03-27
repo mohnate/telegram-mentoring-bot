@@ -1,3 +1,5 @@
+import { FieldType } from "./field";
+
 export type UserProfile = {
-  [key: string]: string | number | Array<string | number>;
+  [key: string]: FieldType;
 };

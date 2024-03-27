@@ -1,5 +1,6 @@
 import { AppDataSource } from "./data-source";
 import { Link } from "./entity/Links";
+import { OngoingCommand } from "./entity/OngoingCommands";
 import { User } from "./entity/User";
 import { WhitelistedMentor } from "./entity/WhitelistedMentors";
 import { setupMigrations } from "./setup-migrations";
@@ -18,3 +19,6 @@ export const WhitelistedMenorRepository =
   AppDataSource.getRepository(WhitelistedMentor);
 
 export const LinkRepository = AppDataSource.getRepository(Link);
+
+export const OngoingCommandRepository =
+  AppDataSource.getRepository(OngoingCommand);

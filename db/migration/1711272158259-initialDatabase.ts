@@ -4,11 +4,12 @@ export class InitialDatabase1711272158259 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     console.log("Creating tables");
     await queryRunner.query(
-      `CREATE TABLE "user" (
+      `CREATE TABLE "users" (
                 "id" SERIAL NOT NULL, 
+                "telegramId" integer NOT NULL,
                 "isMentor" boolean NOT NULL, 
                 "profile" jsonb NOT NULL DEFAULT '{}', 
-                CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id")
+                CONSTRAINT "PK_cace4a159ff9f2512dd42373761" PRIMARY KEY ("id")
                 )`
     );
     await queryRunner.query(

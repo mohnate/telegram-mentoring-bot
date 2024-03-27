@@ -1,0 +1,84 @@
+{
+  "fields": [
+    {
+      "name": "user_type",
+      "label": "Role",
+      "question": "Are you a mentor or a mentee?",
+      "expectedAnswer": [
+        {
+          "value": "mentor",
+          "as": 0
+        },
+        {
+          "value": "mentee",
+          "as": 1
+        }
+      ],
+      "type": "boolean",
+      "required": true,
+      "id": 0
+    },
+    {
+      "name": "firstName",
+      "label": "First Name",
+      "type": "string",
+      "required": true,
+      "id": 1
+    },
+    {
+      "name": "lastName",
+      "label": "Last Name",
+      "type": "string",
+      "required": true,
+      "id": 2
+    },
+    {
+      "name": "age",
+      "label": "Age",
+      "type": "string",
+      "required": false,
+      "id": 3
+    }
+  ],
+  "mentorFields": [
+    {
+      "name": "experience",
+      "label": "Experience",
+      "type": "string",
+      "required": true,
+      "id": 4
+    },
+    {
+      "name": "skills",
+      "label": "Skills",
+      "type": "topics",
+      "required": true,
+      "id": 5
+    },
+    {
+      "name": "contactWays",
+      "label": "Contact Ways",
+      "type": "stringArray",
+      "id": 6,
+      "required": true
+    },
+    {
+      "name": "website",
+      "label": "Website",
+      "type": "string",
+      "regex": "^(http(s)://.)[-a-zA-Z0-9@:%._+~#=]{2,256}.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$",
+      "required": false,
+      "id": 8
+    }
+  ],
+  "menteeFields": [
+    {
+      "name": "interests",
+      "label": "Interests",
+      "question": "What are your interests?",
+      "type": "topics",
+      "required": true,
+      "id": 7
+    }
+  ]
+}

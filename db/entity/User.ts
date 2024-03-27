@@ -2,11 +2,14 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { UserProfile } from "types/db";
 
 @Entity({
-  name: "user",
+  name: "users",
 })
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column()
+  telegramId: number;
 
   @Column()
   isMentor: boolean;
