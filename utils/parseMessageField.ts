@@ -29,9 +29,9 @@ const parseMessageField: UtilsFunction<ParseMessageFieldOptions, FieldType> = ({
     case "string":
       return messageContent;
     case "number":
-      return Number(messageContent);
+      return Number(messageContent) || null;
     case "boolean":
-      return messageContent === "true" || messageContent === "1";
+      return Boolean(messageContent === "true" || messageContent === "1");
     case "stringArray":
       return messageContent.split(",");
     case "topics":

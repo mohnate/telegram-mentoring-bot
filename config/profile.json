@@ -6,12 +6,12 @@
       "question": "Are you a mentor or a mentee?",
       "expectedAnswer": [
         {
-          "value": "mentor",
-          "as": 0
+          "value": "mentee",
+          "as": false
         },
         {
-          "value": "mentee",
-          "as": 1
+          "value": "mentor",
+          "as": true
         }
       ],
       "type": "boolean",
@@ -35,7 +35,7 @@
     {
       "name": "age",
       "label": "Age",
-      "type": "string",
+      "type": "number",
       "required": false,
       "id": 3
     }
@@ -66,7 +66,7 @@
       "name": "website",
       "label": "Website",
       "type": "string",
-      "regex": "^(http(s)://.)[-a-zA-Z0-9@:%._+~#=]{2,256}.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$",
+      "regex": "^https?://",
       "required": false,
       "id": 8
     }

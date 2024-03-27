@@ -6,9 +6,12 @@ export type Field = {
   question?: string;
   name: string;
   label: string;
-  type: "string" | "number" | "boolean" | "stringArray" | "topics";
+  type: string;
   regex?: string;
   required: boolean;
 };
 
-export type expectedAnswer = Array<{ value: string; as: number | string }>;
+export type expectedAnswer = Array<{
+  value: string;
+  as: number | string | boolean;
+}>;

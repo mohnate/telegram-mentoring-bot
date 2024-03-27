@@ -77,7 +77,8 @@ async function onProgress(
     }
   }
   // Save field value
-  user.profile[field.id] = fieldValue;
+  if (fieldIndex > 0) user.profile[field.id] = fieldValue;
+  else user.isMentor = fieldValue as boolean;
   await UserRepository.save(user);
   // Setup complete
   if (fieldIndex + 1 > availableFields.length - 1)
