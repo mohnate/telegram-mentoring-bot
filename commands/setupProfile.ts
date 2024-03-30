@@ -50,6 +50,9 @@ async function onProgress(
   const availableFields = getUserAvailableFields(user.isMentor);
   const field = availableFields[fieldIndex];
   if (!field) return "Invalid field, please try again";
+  // Setup complete
+  if (fieldIndex + 1 > availableFields.length - 1)
+    return endSetup(ongoingCommand, user);
   if (interaction.content === "/skip") {
     return update(
       interaction,
@@ -90,16 +93,13 @@ async function onProgress(
       return "You need to be whitelisted to be a mentor. Please contact an admin.";
   } else user.profile[field.id] = fieldValue;
   await UserRepository.save(user);
-  // Setup complete
-  if (fieldIndex + 1 > availableFields.length - 1)
-    return endSetup(ongoingCommand, user);
   return update(interaction, ongoingCommand, fieldIndex, user, availableFields);
 }
 
 async function endSetup(ongoingCommand: OngoingCommand, user: User) {
   endOngoingCommand(ongoingCommand.id);
   let message =
-    "Setup complete! You can now use the /view_profile command to view your profile and check if everything is correct.";
+    "Setup complete! You can now use the /view_profile command to view your profile and check if everything is correct. Also, you can use /help to discover the new commands you unlocked!";
   return message;
 }
 

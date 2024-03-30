@@ -41,8 +41,8 @@
       "id": 3
     },
     {
-      "name": "telegramUsername",
-      "label": "Telegram Username",
+      "name": "telegramLink",
+      "label": "Telegram Username or Link",
       "private": true,
       "type": "string",
       "required": true,
