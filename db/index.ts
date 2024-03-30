@@ -1,5 +1,5 @@
 import { AppDataSource } from "./data-source";
-import { Link } from "./entity/Links";
+import { Matches } from "./entity/Matches";
 import { OngoingCommand } from "./entity/OngoingCommands";
 import { User } from "./entity/User";
 import { WhitelistedMentor } from "./entity/WhitelistedMentors";
@@ -15,10 +15,10 @@ export const setupDb = async () => {
 
 export const UserRepository = AppDataSource.getRepository(User);
 
-export const WhitelistedMenorRepository =
+export const WhitelistedMentorRepository =
   AppDataSource.getRepository(WhitelistedMentor);
 
-export const LinkRepository = AppDataSource.getRepository(Link);
+export const MatchRespository = AppDataSource.getRepository(Matches);
 
 export const OngoingCommandRepository =
   AppDataSource.getRepository(OngoingCommand);

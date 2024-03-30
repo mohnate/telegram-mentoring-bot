@@ -11,7 +11,8 @@ import getOrCreateUser from "../utils/getOrCreateUser";
 import getUserAvailableFields from "../utils/getUserAvailableFields";
 import endOngoingCommand from "../utils/endOngoingCommand";
 import { User } from "../db/entity/User";
-import { Field } from "types/field";
+import { Field } from "../types/field";
+import isWhitelistedMentor from "../utils/isWhitelistedMentor";
 
 export const commandSettings: Command = {
   name: "setup_profile",
@@ -77,8 +78,17 @@ async function onProgress(
     }
   }
   // Save field value
-  if (fieldIndex > 0) user.profile[field.id] = fieldValue;
-  else user.isMentor = fieldValue as boolean;
+  if (field.isUserTypeField) {
+    // If this is the field to determine if the user is a mentor
+    // Check if the user is whitelisted
+    user.isMentor = fieldValue as boolean;
+    if (
+      fieldValue &&
+      process.env.ENABLE_WHITELIST === "true" &&
+      !(await isWhitelistedMentor(interaction.telegramUser?.username))
+    )
+      return "You need to be whitelisted to be a mentor. Please contact an admin.";
+  } else user.profile[field.id] = fieldValue;
   await UserRepository.save(user);
   // Setup complete
   if (fieldIndex + 1 > availableFields.length - 1)

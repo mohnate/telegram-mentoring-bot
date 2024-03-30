@@ -14,15 +14,17 @@ export class InitialDatabase1711272158259 implements MigrationInterface {
     );
     await queryRunner.query(
       `CREATE TABLE "whitelisted_mentors" (
-                "id" SERIAL NOT NULL
+                "id" SERIAL NOT NULL,
+                "username" character varying NOT NULL
                 )`
     );
     await queryRunner.query(
-      `CREATE TABLE "links" (
+      `CREATE TABLE "matches" (
                 "id" SERIAL NOT NULL, 
                 "userId" integer NOT NULL, 
                 "mentorId" integer NOT NULL, 
-                "isAccepted" boolean NOT NULL, 
+                "matching" boolean NOT NULL, 
+                "accepted" boolean,
                 CONSTRAINT "PK_4c4e4d8f3a2f6b8b1d8b5f7d7c4" PRIMARY KEY ("id")
                 )`
     );

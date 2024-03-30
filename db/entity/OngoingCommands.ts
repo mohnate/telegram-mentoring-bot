@@ -18,4 +18,7 @@ export class OngoingCommand {
 
   @Column()
   chatId: number;
+
+  @Column({ type: "jsonb", nullable: true })
+  data: object;
 }

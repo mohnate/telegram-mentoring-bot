@@ -1,5 +1,5 @@
 import { OngoingCommand } from "db/entity/OngoingCommands";
-import { Chat, User } from "node-telegram-bot-api";
+import TelegramBot, { Chat, User } from "node-telegram-bot-api";
 
 export type Command = {
   name: string;
@@ -17,6 +17,7 @@ export type CommandInteraction = {
   content: string;
   telegramUser?: User;
   chat: Chat;
+  bot: TelegramBot;
 };
 
 export type InteractionType = "APPLICATION_COMMAND";

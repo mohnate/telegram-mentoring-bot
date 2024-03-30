@@ -1,7 +1,6 @@
 import { Command, CommandInteraction } from "../types/commands";
 import getUser from "../utils/getUser";
-import getField from "../utils/getField";
-import renderFieldValue from "../utils/renderFieldValue";
+import renderProfile from "../utils/renderProfile";
 
 export const commandSettings: Command = {
   name: "view_profile",
@@ -14,16 +13,5 @@ export const commandSettings: Command = {
 async function handler({ telegramUser }: CommandInteraction) {
   if (!telegramUser) return "No telegram user found in interaction";
   const user = await getUser(telegramUser.id);
-  if (!user) return "No profile yet! Create one with /setup_profile.";
-  const profile = user.profile;
-  const profileString = Object.keys(profile)
-    .map(
-      (key) =>
-        `${getField(key)?.label}: ${renderFieldValue({
-          field: getField(key),
-          fieldValue: profile[key],
-        })}`
-    )
-    .join("\n");
-  return profileString;
+  return renderProfile({ user, renderPrivate: true });
 }

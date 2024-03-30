@@ -4,6 +4,7 @@
       "name": "user_type",
       "label": "Role",
       "question": "Are you a mentor or a mentee?",
+      "isUserTypeField": true,
       "expectedAnswer": [
         {
           "value": "mentee",
@@ -38,6 +39,14 @@
       "type": "number",
       "required": false,
       "id": 3
+    },
+    {
+      "name": "telegramUsername",
+      "label": "Telegram Username",
+      "private": true,
+      "type": "string",
+      "required": true,
+      "id": 9
     }
   ],
   "mentorFields": [
@@ -53,7 +62,8 @@
       "label": "Skills",
       "type": "topics",
       "required": true,
-      "id": 5
+      "id": 5,
+      "matchingField": "interests"
     },
     {
       "name": "contactWays",

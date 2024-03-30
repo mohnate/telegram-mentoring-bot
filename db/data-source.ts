@@ -2,9 +2,9 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { User } from "./entity/User";
 import { WhitelistedMentor } from "./entity/WhitelistedMentors";
-import { Link } from "./entity/Links";
 import config from "../config";
 import { OngoingCommand } from "./entity/OngoingCommands";
+import { Matches } from "./entity/Matches";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   port: config.DB_PORT,
   synchronize: false,
   logging: false,
-  entities: [User, WhitelistedMentor, Link, OngoingCommand],
+  entities: [User, WhitelistedMentor, Matches, OngoingCommand],
   migrations: [__dirname + "/migration/**/*.{js,ts}"],
   migrationsTableName: "migrations",
   subscribers: [],

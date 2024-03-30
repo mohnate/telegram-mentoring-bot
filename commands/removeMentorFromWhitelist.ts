@@ -1,3 +1,5 @@
+import isAdmin from "../utils/isAdmin";
+import { WhitelistedMentorRepository } from "../db";
 import { Command, CommandInteraction } from "../types/commands";
 
 export const commandSettings: Command = {
@@ -8,5 +10,12 @@ export const commandSettings: Command = {
 };
 
 async function handler(interaction: CommandInteraction) {
-  return "Edit profile handler";
+  if (!isAdmin(interaction.telegramUser?.username))
+    return "You are not allowed to run this command";
+  const res = await WhitelistedMentorRepository.delete({
+    username: interaction.content,
+  });
+  if (res.affected)
+    return `Mentor ${interaction.content} has been removed from whitelist`;
+  return `Mentor ${interaction.content} is not whitelisted`;
 }

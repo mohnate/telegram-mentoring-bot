@@ -1,3 +1,4 @@
+import { OngoingCommand } from "db/entity/OngoingCommands";
 import { OngoingCommandRepository } from "../db";
 import { AsyncUtilsFunction } from "../types/utils";
 
@@ -7,14 +8,16 @@ const addOngoingCommand: AsyncUtilsFunction<
     userId: number;
     chatId: number;
   },
-  void
+  OngoingCommand
 > = async ({ command, userId, chatId }) => {
-  await OngoingCommandRepository.save({
+  const ongoingCommand = await OngoingCommandRepository.save({
     command,
     userId,
     chatId,
     stepId: 0,
   });
+
+  return ongoingCommand;
 };
 
 export default addOngoingCommand;

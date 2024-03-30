@@ -34,6 +34,10 @@ Acceptable topics: ${topics.map((t) => t.name).join(", ")}`;
   if (!field.required)
     message += "\n\nThis field is optional. Type /skip to skip.";
 
+  if (field.private)
+    message +=
+      "\n\nThis field is private. It will only be shared to the people you accept matches with.";
+
   if (user) {
     const value = user.profile[field.id];
     if (value)

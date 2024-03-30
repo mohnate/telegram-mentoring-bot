@@ -10,6 +10,9 @@ import getOngoingCommand from "./utils/getOngoingCommand";
 const startBot = async () => {
   assertValidConfig();
 
+  console.log("Connecting to database...");
+  await setupDb();
+
   const bot = new TelegramBot(config.BOT_TOKEN as string, {
     polling: true,
   });
@@ -25,9 +28,9 @@ const startBot = async () => {
   // Register commands
   commands.forEach((commandFile) => {
     const command = commandFile.commandSettings;
-    console.log("Registering command", command.name);
+    console.log(`Registering command: ${command.name}`);
     bot.onText(command.regex, async (message) => {
-      const res = await command.handler(parseInteraction({ message }));
+      const res = await command.handler(parseInteraction({ message, bot }));
       if (res) bot.sendMessage(message.chat.id, res);
     });
   });
@@ -54,6 +57,7 @@ const startBot = async () => {
           parseInteraction({
             message,
             isStep: true,
+            bot,
           }),
           ongoingCommand
         );
@@ -61,9 +65,6 @@ const startBot = async () => {
       }
     }
   });
-
-  console.log("Connecting to database...");
-  await setupDb();
 
   console.log("Mantor Bot successfully started!");
 };
