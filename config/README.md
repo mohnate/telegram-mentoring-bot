@@ -9,9 +9,11 @@ This file contains the list of questions to ask to the users when they fill thei
 
 The object contain 3 main fields:
 ```json	
-  fields: [],
-  mentorFields: [],
-  menteeFields: []
+{
+  "fields": [],
+  "mentorFields": [],
+  "menteeFields": []
+}
 ```
 First, the bot will ask common questions to both mentors and mentees. Then, it will ask specific questions to mentors and mentees. The questions are asked in the order they are in the list.
 
@@ -22,7 +24,7 @@ To add a question, add a new object in the list with the following fields:
   "label": "📙 A more stylish name",
   "type": "string",
   "required": true,
-  "id": 45,
+  "id": 45
 }
 ```
 
@@ -77,9 +79,11 @@ This file contains the list of topics that the users can choose from. You can ad
 
 The object contain 3 main fields:
 ```json	
-  id: 0,
-  name: "the_topic_name",
-  label: "📙 A more stylish name",
+{
+  "id": 0,
+  "name": "the_topic_name",
+  "label": "📙 A more stylish name"
+}
 ```
 
 The label will be displayed on the user profile.

@@ -49,6 +49,9 @@ Start a new chat with the bot. The bot will ask you to fill your profile. Once y
 /start
 ```
 
+Mentors will receive a notification when they have a match. They can accept or refuse the match.
+Menetees will receive a notification when a mentor has accepted a match, and other pending matches will be canceled.
+
 As an admin, you can use the following commands:
 ```bash
 /whitelist_mentor telegram_username
