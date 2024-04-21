@@ -1,5 +1,5 @@
 import { Command, CommandInteraction } from "../types/commands";
-import { MatchRespository } from "../db";
+import { MatchRespository, UserRepository } from "../db";
 
 export const commandSettings: Command = {
   name: "reset_search",
@@ -9,8 +9,13 @@ export const commandSettings: Command = {
 };
 
 async function handler(interaction: CommandInteraction) {
-  const userId = interaction.telegramUser?.id;
-  if (!userId) return "No telegram user found in interaction";
+  const telegramUserId = interaction.telegramUser?.id;
+  if (!telegramUserId) return "No telegram user found in interaction";
+  const user = await UserRepository.findOne({
+    where: { telegramId: telegramUserId },
+  });
+  if (!user) return "User not found";
+  const userId = user.id;
   await MatchRespository.delete({
     userId,
     matching: false,

@@ -59,11 +59,11 @@ async function onProgress(
     },
   });
   if (!match) return "Match not found";
-  if (interaction.content === "/next") {
+  if (interaction.content === "/decline_match") {
     match.matching = false;
     await MatchRespository.save(match);
   }
-  if (interaction.content === "/match") {
+  if (interaction.content === "/accept_match") {
     notifyUser({
       telegramUserId: data.telegramUserId,
       message: `You have been matched with a mentor. please contact him.\n${renderProfile(
@@ -101,7 +101,9 @@ async function update(user: User, ongoingCommand: OngoingCommand) {
   };
   await OngoingCommandRepository.save(ongoingCommand);
 
-  return `${renderProfile({ user: matchedUser })}\n\n /match OR /next`;
+  return `${renderProfile({
+    user: matchedUser,
+  })}\n\n /accept_match OR /decline_match`;
 }
 
 async function end(ongoingCommand: OngoingCommand) {

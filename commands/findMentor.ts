@@ -46,27 +46,46 @@ async function onProgress(
     mentorTelegramId: number;
   };
   if (interaction.content === "/next" || interaction.content === "/match") {
-    await MatchRespository.save({
-      userId: user.id,
-      mentorId: data?.mentorId,
-      matching: interaction.content === "/match",
-    });
+    if (data?.mentorId)
+      await MatchRespository.save({
+        userId: user.id,
+        mentorId: data?.mentorId,
+        matching: interaction.content === "/match",
+      });
   }
   if (interaction.content === "/match") {
-    await notifyUser({
-      telegramUserId: data.mentorTelegramId,
-      message:
-        "You have been matched with a mentee. Please contact them. Use /check_matches to see your matches.",
-      bot: interaction.bot,
-    });
+    if (data?.mentorTelegramId)
+      await notifyUser({
+        telegramUserId: data?.mentorTelegramId,
+        message:
+          "You have been matched with a mentee. Please contact them. Use /check_matches to see your matches.",
+        bot: interaction.bot,
+      });
   }
-  return update(user, ongoingCommand);
+  const actionMessage =
+    interaction.content === "/next"
+      ? "🔁 Nexted\n\n"
+      : interaction.content === "/match"
+      ? "🔥 Matched\n\n"
+      : "";
+  return update(user, ongoingCommand, actionMessage);
 }
 
-async function update(user: User, ongoingCommand: OngoingCommand) {
+async function update(
+  user: User,
+  ongoingCommand: OngoingCommand,
+  actionMessage = ""
+) {
   const mentor = await getMatchingMentor(user);
-  if (!mentor)
-    return "No mentor found. You can start over the matching process by using /reset_search, which will remove any next you did.";
+  if (!mentor) {
+    if (ongoingCommand.stepId === 0)
+      return "No mentor currently available. Please try again later or contact support.";
+    return (
+      actionMessage +
+      "You have reached the end of the list. Use /reset_search to start over if you think you missed a mentor."
+    );
+  }
+  ongoingCommand.stepId++;
   // Update ongoing command data
   ongoingCommand.data = {
     mentorId: mentor.id,
@@ -74,5 +93,7 @@ async function update(user: User, ongoingCommand: OngoingCommand) {
   };
   await OngoingCommandRepository.save(ongoingCommand);
 
-  return `${renderProfile({ user: mentor })}\n\n /match OR /next`;
+  return `${actionMessage ? `${actionMessage}\n\n` : ""}${renderProfile({
+    user: mentor,
+  })}\n\n /match OR /next`;
 }
