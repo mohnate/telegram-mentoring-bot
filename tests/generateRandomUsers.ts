@@ -1,5 +1,4 @@
 import { UserRepository, setupDb } from "../db";
-import topics from "../config/topics.json";
 import { User } from "../db/entity/User";
 
 const generateRandomUsers = (count: number) => {
@@ -15,6 +14,19 @@ const generateRandomUsers = (count: number) => {
     const user = new User();
     user.telegramId = Math.floor(Math.random() * 1000000);
     user.isMentor = isMentor;
+
+    const topics = [
+      { id: 1, value: "JavaScript" },
+      { id: 2, value: "TypeScript" },
+      { id: 3, value: "Python" },
+      { id: 4, value: "Java" },
+      { id: 5, value: "C++" },
+      { id: 6, value: "C#" },
+      { id: 7, value: "Ruby" },
+      { id: 8, value: "Go" },
+      { id: 9, value: "Rust" },
+      { id: 10, value: "PHP" },
+    ];
 
     const randomTopics = topics
       .sort(() => Math.random() - 0.5)

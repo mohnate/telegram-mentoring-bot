@@ -18,7 +18,7 @@ export const UserRepository = AppDataSource.getRepository(User);
 export const WhitelistedMentorRepository =
   AppDataSource.getRepository(WhitelistedMentor);
 
-export const MatchRespository = AppDataSource.getRepository(Matches);
+export const MatchRepository = AppDataSource.getRepository(Matches);
 
 export const OngoingCommandRepository =
   AppDataSource.getRepository(OngoingCommand);

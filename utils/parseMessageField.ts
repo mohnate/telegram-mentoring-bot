@@ -1,6 +1,5 @@
 import { Field, FieldType } from "types/field";
 import { UtilsFunction } from "../types/utils";
-import topics from "../config/topics.json";
 
 type ParseMessageFieldOptions = {
   messageContent: string;
@@ -34,12 +33,6 @@ const parseMessageField: UtilsFunction<ParseMessageFieldOptions, FieldType> = ({
       return Boolean(messageContent === "true" || messageContent === "1");
     case "stringArray":
       return messageContent.split(",");
-    case "topics":
-      return messageContent.split(",").map((topic) => {
-        const reducedTopic = topic.trim().toLowerCase();
-        const topicId = topics.findIndex((t) => t.name === reducedTopic);
-        return topicId === -1 ? null : topicId;
-      });
     default:
       return null;
   }

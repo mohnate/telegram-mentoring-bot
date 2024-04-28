@@ -1,8 +1,10 @@
-import { MatchRespository, UserRepository } from "../db";
+import { MatchRepository, UserRepository } from "../db";
 import { User } from "../db/entity/User";
 import { AsyncUtilsFunction } from "../types/utils";
 import profile from "../config/profile.json";
 import getUserAvailableFields from "./getUserAvailableFields";
+import getMentorMenteeLimit from "./getMentorMenteeLimit";
+import { Matches } from "../db/entity/Matches";
 
 const getMatchingMentor: AsyncUtilsFunction<
   User | undefined,
@@ -12,17 +14,20 @@ const getMatchingMentor: AsyncUtilsFunction<
   const users = await UserRepository.find({
     where: { isMentor: true },
   });
-  const userMatches = await MatchRespository.find({
-    where: { userId: user.id },
-  });
+  const matches = await MatchRepository.find();
+  const userMatches = matches.filter((match) => match.userId === user.id);
   const userProfile = user.profile;
   if (!userProfile) return null;
 
-  const notMatchedUsers = users.filter(
-    (mentor) =>
-      !userMatches.find((match) => match.mentorId === mentor.id) &&
-      mentor.id !== user.id
-  );
+  const notMatchedUsers = users.filter((mentor) => {
+    const isAlreadyMatched =
+      userMatches.find((match) => match.mentorId === mentor.id) ||
+      mentor.id === user.id;
+    const mentoringLimit = getMentorMenteeLimit(mentor);
+    // Get number of mentees, if limit is reached, skip this mentor
+    const menteeCount = getMenteeCount(mentor.id, matches);
+    return !isAlreadyMatched && menteeCount < mentoringLimit;
+  });
 
   notMatchedUsers.sort((a: User, b: User) => {
     const criterias = profile.mentorFields.filter(
@@ -45,8 +50,13 @@ const getMatchingMentor: AsyncUtilsFunction<
       if (!aField || !bField) continue;
       const aValue = a.profile[aField.id];
       const bValue = b.profile[bField.id];
-      if (criteria.type === "topics" || criteria.type === "stringArray") {
+      if (criteria.type === "stringArray") {
         // Check with which mentor the user has most matching topics
+        const aMenteeCount = getMenteeCount(a.id, matches);
+        const bMenteeCount = getMenteeCount(b.id, matches);
+        // Sort by mentee count
+        if (aMenteeCount < bMenteeCount) return -1;
+        if (aMenteeCount > bMenteeCount) return 1;
         const userTopics = userValue as string[];
         const aTopics = aValue as string[];
         const bTopics = bValue as string[];
@@ -57,7 +67,6 @@ const getMatchingMentor: AsyncUtilsFunction<
           bTopics.includes(topic)
         ).length;
         if (aMatchingTopics > bMatchingTopics) return -1;
-
         if (aMatchingTopics < bMatchingTopics) return 1;
       }
     }
@@ -68,3 +77,9 @@ const getMatchingMentor: AsyncUtilsFunction<
 };
 
 export default getMatchingMentor;
+
+const getMenteeCount = (mentorId: number, matches: Matches[]) => {
+  return matches.filter(
+    (match) => match.mentorId === mentorId && match.matching && match.accepted
+  ).length;
+};

@@ -34,7 +34,7 @@ The label will be displayed on the user profile.
 
 The id must be unique and is used to identify the question in the database.
 
-Type can be "string", "number", "boolean", "[topics](#topicsjson)", "stringArray".
+Type can be "string", "number", "boolean", "stringArray".
 
 You can update name, label, type, and required fields without breaking the database, but you should only change the id if you know what you are doing.
 
@@ -48,10 +48,29 @@ By default the question is generated using the label, with "Please enter your " 
 
 ```json	
 {
-  "expectedAnswer": ["red", "blue", "green"],
+  "expectedAnswer": [
+    {
+      "value": "mentor",
+      "as": true
+    },
+    {
+      "value": "mentee",
+      "label": false
+    }
+  ],
 }
 ```
-The expectedAnswer field is used to validate the user input. If the user input is not in the list, the bot will ask the question again.
+The expectedAnswer field is used to validate the user input. If the user input is not in the list, the bot will ask the question again. The value field is the expected value (for instance, this is what is going to be shown on buttons). The as field is what is actually going to be stored in the database.
+
+```json	
+{
+  "matchingField": "field_name",
+}
+
+```json	
+{
+  "matchingField": "field_name",
+}
 
 ```json	
 {
@@ -73,19 +92,3 @@ The regex field is used to validate the user input. If the user input does not m
 }
 ```
 This should be set only in one field. It must be a common field. The bot will use this field to determine if the user is a mentor or a mentee. The value of this field must be "mentor" or "mentee". The bot will ask the specific questions to the user based on this field.
-
-## topics.json
-This file contains the list of topics that the users can choose from. You can add or remove topics by adding or removing the topic in the list.
-
-The object contain 3 main fields:
-```json	
-{
-  "id": 0,
-  "name": "the_topic_name",
-  "label": "📙 A more stylish name"
-}
-```
-
-The label will be displayed on the user profile.
-
-This is the name that will be entered by the user during the setup, as it is more likely to be more user-friendly than the id or the label. Then, the id is used to identify the topic in the database, so you can change the label and the name without breaking the database, but you should only change the id if you know what you are doing.

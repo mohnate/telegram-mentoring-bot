@@ -1,5 +1,5 @@
-import getUser from "../utils/getUser";
 import { Command, CommandInteraction } from "../types/commands";
+import getOrCreateUser from "../utils/getOrCreateUser";
 
 export const commandSettings: Command = {
   name: "start",
@@ -12,7 +12,7 @@ export const commandSettings: Command = {
 async function handler(interaction: CommandInteraction) {
   const telegramUserId = interaction.telegramUser?.id;
   if (!telegramUserId) return "No telegram user found in interaction";
-  const user = await getUser(telegramUserId);
+  const user = await getOrCreateUser(telegramUserId);
   let common = `- /setup_profile: Create your profile
 - /view_profile: View your profile`;
 

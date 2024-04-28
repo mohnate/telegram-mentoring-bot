@@ -31,7 +31,9 @@ const startBot = async () => {
     console.log(`Registering command: ${command.name}`);
     bot.onText(command.regex, async (message) => {
       const res = await command.handler(parseInteraction({ message, bot }));
-      if (res) bot.sendMessage(message.chat.id, res);
+      if (typeof res === "string") return bot.sendMessage(message.chat.id, res);
+      const { response, options } = res;
+      if (response) return bot.sendMessage(message.chat.id, response, options);
     });
   });
 
@@ -61,12 +63,35 @@ const startBot = async () => {
           }),
           ongoingCommand
         );
-        if (res) bot.sendMessage(message.chat.id, res);
+        if (typeof res === "string" && res)
+          return bot.sendMessage(message.chat.id, res);
+        const { response, options } = res;
+        if (response)
+          return bot.sendMessage(message.chat.id, response, options);
       }
     }
   });
 
-  console.log("Mantor Bot successfully started!");
+  // Handle buttons
+  bot.on("callback_query", async function onCallbackQuery(callbackQuery) {
+    const data = callbackQuery.data;
+    const commandName = data?.split(":")[0];
+    const value = data?.split(":").slice(1).join(":");
+    const command = commands.find(
+      (command) => command.commandSettings.name === commandName
+    );
+    if (command && command.commandSettings.onButton) {
+      const message = callbackQuery.message;
+      const res = await command.commandSettings.onButton(value, message, bot);
+      if (!message) return;
+      await bot.answerCallbackQuery(callbackQuery.id);
+      if (typeof res === "string" && res)
+        return bot.sendMessage(message.chat.id, res);
+      const { response, options } = res;
+      if (response) return bot.sendMessage(message.chat.id, response, options);
+    }
+  });
+  console.log("Mentor Bot successfully started!");
 };
 
 startBot();

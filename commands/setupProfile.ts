@@ -13,6 +13,9 @@ import endOngoingCommand from "../utils/endOngoingCommand";
 import { User } from "../db/entity/User";
 import { Field } from "../types/field";
 import isWhitelistedMentor from "../utils/isWhitelistedMentor";
+import TelegramBot, { Message } from "node-telegram-bot-api";
+import getOngoingCommand from "../utils/getOngoingCommand";
+import renderFieldValue from "../utils/renderFieldValue";
 
 export const commandSettings: Command = {
   name: "setup_profile",
@@ -21,6 +24,7 @@ export const commandSettings: Command = {
   handler,
   help: "Edit your profile",
   onProgress,
+  onButton,
 };
 
 async function handler(interaction: CommandInteraction) {
@@ -33,11 +37,18 @@ async function handler(interaction: CommandInteraction) {
     userId,
     chatId: interaction.chat.id,
   });
-  return `Let's setup your profile!
+  const { response, options } = await getEnterFieldMessage({
+    field: getField(0),
+    command: "setup_profile",
+  });
+  return {
+    response: `Let's setup your profile!
 I will ask you a few questions to get to know you better.
 There is not time limit, so take your time, you can always come back later.
 You can stop at any time by typing /cancel
-${getEnterFieldMessage({ field: getField(0) })}`;
+${response}`,
+    options,
+  };
 }
 
 async function onProgress(
@@ -48,11 +59,11 @@ async function onProgress(
   const user = await getOrCreateUser(ongoingCommand.userId);
   if (!user) return "User not found";
   const availableFields = getUserAvailableFields(user.isMentor);
-  const field = availableFields[fieldIndex];
-  if (!field) return "Invalid field, please try again";
   // Setup complete
   if (fieldIndex + 1 > availableFields.length - 1)
     return endSetup(ongoingCommand, user);
+  const field = availableFields[fieldIndex];
+  if (!field) return "Invalid field, please try again";
   if (interaction.content === "/skip") {
     return update(
       interaction,
@@ -71,15 +82,6 @@ async function onProgress(
   });
   if (fieldValue === null)
     return "Invalid value, please try again, or cancel the setup using /cancel.";
-  if (field.type === "topics" && Array.isArray(fieldValue)) {
-    for (let index = 0; index < fieldValue.length; index++) {
-      const value = fieldValue[index];
-      if (value === null)
-        return `Could not find topic ${
-          messageContent.split(",")[index]
-        }. Please try again.`;
-    }
-  }
   // Save field value
   if (field.isUserTypeField) {
     // If this is the field to determine if the user is a mentor
@@ -94,6 +96,83 @@ async function onProgress(
   } else user.profile[field.id] = fieldValue;
   await UserRepository.save(user);
   return update(interaction, ongoingCommand, fieldIndex, user, availableFields);
+}
+
+async function onButton(value: string, message: Message, bot: TelegramBot) {
+  const telegramUserId = message.chat.id;
+  const chatId = message.chat.id;
+  const ongoingCommand = await getOngoingCommand({
+    userId: telegramUserId,
+    chatId,
+  });
+  if (!ongoingCommand) return "No ongoing command found";
+  const user = await getOrCreateUser(telegramUserId);
+  if (!user) return "User not found";
+  const fieldIndex = ongoingCommand.stepId;
+  const availableFields = getUserAvailableFields(user.isMentor);
+  // Setup complete
+  if (value === "next") {
+    if (fieldIndex + 1 > availableFields.length - 1)
+      return endSetup(ongoingCommand, user);
+    return update(
+      { content: "", chat: message.chat, bot },
+      ongoingCommand,
+      fieldIndex,
+      user,
+      availableFields
+    );
+  }
+  const field = availableFields[fieldIndex];
+  if (!field) return "Invalid field for button, please try again";
+  if (!field.expectedAnswer) return "Invalid field type";
+  const topic = field.expectedAnswer?.find(
+    (e) => e.as.toString() === value.toString()
+  );
+  if (!topic) return "Invalid response";
+  // Save field value
+  if (field.isUserTypeField) {
+    // If this is the field to determine if the user is a mentor
+    // Check if the user is whitelisted
+    user.isMentor = topic.as as boolean;
+    if (
+      value &&
+      process.env.ENABLE_WHITELIST === "true" &&
+      !(await isWhitelistedMentor(message.from?.username))
+    )
+      return "You need to be whitelisted to be a mentor. Please contact an admin.";
+  }
+  if (field.type === "stringArray") {
+    const fieldValueCheck = user.profile[field.id];
+    if (!fieldValueCheck || !Array.isArray(fieldValueCheck))
+      user.profile[field.id] = [];
+    const fieldValue = user.profile[field.id] || [];
+    if (Array.isArray(fieldValue)) {
+      if (fieldValue.includes(topic.as))
+        user.profile[field.id] = fieldValue.filter((e) => e !== topic.as);
+      else user.profile[field.id] = [...fieldValue, topic.as];
+    }
+  } else user.profile[field.id] = topic.as;
+  await UserRepository.save(user);
+  if (field.type === "stringArray") {
+    const { response, options } = await getEnterFieldMessage({
+      field,
+      user,
+      command: "setup_profile",
+    });
+    bot.editMessageText(response, {
+      chat_id: chatId,
+      message_id: message.message_id,
+      reply_markup: JSON.parse(options.reply_markup),
+    });
+    return "";
+  } else
+    return update(
+      { content: topic.value, chat: message.chat, bot },
+      ongoingCommand,
+      fieldIndex,
+      user,
+      availableFields
+    );
 }
 
 async function endSetup(ongoingCommand: OngoingCommand, user: User) {
@@ -115,5 +194,9 @@ async function update(
     ongoingCommandId: ongoingCommand.id,
     chatId: interaction.chat.id,
   });
-  return getEnterFieldMessage({ field: availableFields[fieldIndex + 1], user });
+  return getEnterFieldMessage({
+    field: availableFields[fieldIndex + 1],
+    user,
+    command: "setup_profile",
+  });
 }

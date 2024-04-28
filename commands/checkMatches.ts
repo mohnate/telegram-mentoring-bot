@@ -6,12 +6,13 @@ import getOrCreateUser from "../utils/getOrCreateUser";
 import { User } from "../db/entity/User";
 import renderProfile from "../utils/renderProfile";
 import {
-  MatchRespository,
+  MatchRepository,
   OngoingCommandRepository,
   UserRepository,
 } from "../db";
 import notifyUser from "../utils/notifyUser";
 import { IsNull, Not, Or } from "typeorm";
+import doesMentorAcceptMentees from "../utils/doesMentorAcceptMentees";
 
 export const commandSettings: Command = {
   name: "check_matches",
@@ -49,8 +50,8 @@ async function onProgress(
     userId: number;
     telegramUserId: number;
   };
-  if (!data) return await end(ongoingCommand);
-  const match = await MatchRespository.findOne({
+  if (!data) return await end(ongoingCommand, user.id);
+  const match = await MatchRepository.findOne({
     where: {
       userId: data.userId,
       mentorId: user.id,
@@ -61,7 +62,7 @@ async function onProgress(
   if (!match) return "Match not found";
   if (interaction.content === "/decline_match") {
     match.matching = false;
-    await MatchRespository.save(match);
+    await MatchRepository.save(match);
   }
   if (interaction.content === "/accept_match") {
     notifyUser({
@@ -72,7 +73,7 @@ async function onProgress(
       bot: interaction.bot,
     });
     match.accepted = true;
-    await MatchRespository.save(match);
+    await MatchRepository.save(match);
     OngoingCommandRepository.delete({ id: ongoingCommand.id });
     return `You can directly message the user by using the information on his profile. He should also receive a notification.`;
   }
@@ -81,14 +82,14 @@ async function onProgress(
 }
 
 async function update(user: User, ongoingCommand: OngoingCommand) {
-  const matches = await MatchRespository.find({
+  const matches = await MatchRepository.find({
     where: {
       mentorId: user.id,
       matching: true,
       accepted: Or(Not(true), IsNull()),
     },
   });
-  if (matches.length === 0) return await end(ongoingCommand);
+  if (matches.length === 0) return await end(ongoingCommand, user.id);
   const firstMatch = matches[0];
   const matchedUser = await UserRepository.findOne({
     where: { id: firstMatch.userId },
@@ -106,7 +107,10 @@ async function update(user: User, ongoingCommand: OngoingCommand) {
   })}\n\n /accept_match OR /decline_match`;
 }
 
-async function end(ongoingCommand: OngoingCommand) {
+async function end(ongoingCommand: OngoingCommand, mentorId: number) {
   await OngoingCommandRepository.delete({ id: ongoingCommand.id });
-  return "No pending matches found. Please try again later. If you received a notification, it might mean that the user has already been matched with someone else.";
+  const accepts = await doesMentorAcceptMentees(mentorId);
+  return accepts
+    ? "No pending matches found. Please try again later. If you received a notification, it might mean that the user has already been matched with someone else."
+    : "No pending matches found. You have reached your limit of mentees. To receive new matches, please update your profile using /setup_profile.";
 }

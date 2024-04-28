@@ -1,5 +1,5 @@
 import { Command, CommandInteraction } from "../types/commands";
-import { MatchRespository, UserRepository } from "../db";
+import { MatchRepository, UserRepository } from "../db";
 
 export const commandSettings: Command = {
   name: "reset_search",
@@ -16,7 +16,7 @@ async function handler(interaction: CommandInteraction) {
   });
   if (!user) return "User not found";
   const userId = user.id;
-  await MatchRespository.delete({
+  await MatchRepository.delete({
     userId,
     matching: false,
   });

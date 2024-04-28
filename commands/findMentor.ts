@@ -5,9 +5,11 @@ import clearChatOngoingCommandsForUser from "../utils/clearChatOngoingCommandsFo
 import getOrCreateUser from "../utils/getOrCreateUser";
 import { User } from "../db/entity/User";
 import renderProfile from "../utils/renderProfile";
-import { MatchRespository, OngoingCommandRepository } from "../db";
+import { MatchRepository, OngoingCommandRepository } from "../db";
 import notifyUser from "../utils/notifyUser";
 import getMatchingMentor from "../utils/getMatchingMentor";
+import TelegramBot, { Message } from "node-telegram-bot-api";
+import getOngoingCommand from "../utils/getOngoingCommand";
 
 export const commandSettings: Command = {
   name: "find_mentor",
@@ -15,7 +17,7 @@ export const commandSettings: Command = {
   description: "Find a mentor",
   handler,
   help: "Use this command to find a mentor that matches your interests and needs",
-  onProgress,
+  onButton,
 };
 
 async function handler(interaction: CommandInteraction) {
@@ -35,37 +37,41 @@ async function handler(interaction: CommandInteraction) {
   return update(user, ongoingCommand);
 }
 
-async function onProgress(
-  interaction: CommandInteraction,
-  ongoingCommand: OngoingCommand
-) {
+async function onButton(value: string, message: Message, bot: TelegramBot) {
+  const telegramUserId = message.chat.id;
+  const chatId = message.chat.id;
+  const ongoingCommand = await getOngoingCommand({
+    userId: telegramUserId,
+    chatId,
+  });
+  if (!ongoingCommand) return "No ongoing command found";
   const user = await getOrCreateUser(ongoingCommand.userId);
   if (!user) return "User not found";
   const data = ongoingCommand.data as {
     mentorId: number;
     mentorTelegramId: number;
   };
-  if (interaction.content === "/next" || interaction.content === "/match") {
+  if (value === "next" || value === "match") {
     if (data?.mentorId)
-      await MatchRespository.save({
+      await MatchRepository.save({
         userId: user.id,
         mentorId: data?.mentorId,
-        matching: interaction.content === "/match",
+        matching: value === "match",
       });
   }
-  if (interaction.content === "/match") {
+  if (value === "match") {
     if (data?.mentorTelegramId)
       await notifyUser({
         telegramUserId: data?.mentorTelegramId,
         message:
           "You have been matched with a mentee. Please contact them. Use /check_matches to see your matches.",
-        bot: interaction.bot,
+        bot: bot,
       });
   }
   const actionMessage =
-    interaction.content === "/next"
+    value === "next"
       ? "🔁 Nexted\n\n"
-      : interaction.content === "/match"
+      : value === "/match"
       ? "🔥 Matched\n\n"
       : "";
   return update(user, ongoingCommand, actionMessage);
@@ -93,7 +99,19 @@ async function update(
   };
   await OngoingCommandRepository.save(ongoingCommand);
 
-  return `${actionMessage ? `${actionMessage}\n\n` : ""}${renderProfile({
-    user: mentor,
-  })}\n\n /match OR /next`;
+  return {
+    response: `${actionMessage ? `${actionMessage}\n\n` : ""}${renderProfile({
+      user: mentor,
+    })}`,
+    options: {
+      reply_markup: JSON.stringify({
+        inline_keyboard: [
+          [
+            { text: "🔥 Match", callback_data: "find_mentor:match" },
+            { text: "🔁 Next", callback_data: "find_mentor:next" },
+          ],
+        ],
+      }),
+    },
+  };
 }

@@ -7,11 +7,11 @@
       "isUserTypeField": true,
       "expectedAnswer": [
         {
-          "value": "mentee",
+          "value": "Mentee",
           "as": false
         },
         {
-          "value": "mentor",
+          "value": "Mentor",
           "as": true
         }
       ],
@@ -51,6 +51,15 @@
   ],
   "mentorFields": [
     {
+      "name": "mentees-limit",
+      "label": "Mentees limit",
+      "question": "How many mentees are you willing to take on at a time? (the bot will automatically stop matching you with new mentees once you reach this limit)",
+      "type": "number",
+      "required": true,
+      "private": true,
+      "id": 13
+    },
+    {
       "name": "experience",
       "label": "Experience",
       "type": "string",
@@ -60,10 +69,76 @@
     {
       "name": "skills",
       "label": "Skills",
-      "type": "topics",
+      "question": "In what area(s) are your specialities?",
+      "type": "stringArray",
       "required": true,
       "id": 5,
-      "matchingField": "interests"
+      "matchingField": "interests",
+      "expectedAnswer": [
+        {
+          "value": "🌐 Front End",
+          "as": 0
+        },
+        {
+          "value": "🧑‍🎨 Design",
+          "as": 1
+        },
+        {
+          "value": "🗂️ Product & Business Model",
+          "as": 2
+        },
+        {
+          "value": "🐪 Backend + Cairo",
+          "as": 3
+        }
+      ]
+    },
+    {
+      "name": "verticals",
+      "label": "Verticals",
+      "question": "Select all the verticals below that are your specialities.",
+      "type": "stringArray",
+      "required": true,
+      "id": 10,
+      "matchingField": "vertical-interests",
+      "expectedAnswer": [
+        {
+          "value": "💸 DeFi",
+          "as": 0
+        },
+        {
+          "value": "🖼️ NFTs",
+          "as": 1
+        },
+        {
+          "value": "🎮 Gaming",
+          "as": 2
+        },
+        {
+          "value": "🏗️ Infrastructure",
+          "as": 3
+        },
+        {
+          "value": "🛒 Consumer",
+          "as": 4
+        },
+        {
+          "value": "🪙 Tokenisation (RWAs etc)",
+          "as": 5
+        },
+        {
+          "value": "📷 Media",
+          "as": 6
+        },
+        {
+          "value": "🤖 AI / ML",
+          "as": 7
+        },
+        {
+          "value": "💳 Payments",
+          "as": 8
+        }
+      ]
     },
     {
       "name": "contactWays",
@@ -83,12 +158,84 @@
   ],
   "menteeFields": [
     {
+      "name": "contactWays",
+      "label": "Contact Ways",
+      "type": "stringArray",
+      "question": "How would you like to be contacted by your mentor (you can provide usernames & social media platforms)?",
+      "id": 11,
+      "required": true
+    },
+    {
       "name": "interests",
       "label": "Interests",
       "question": "What are your interests?",
-      "type": "topics",
+      "type": "stringArray",
       "required": true,
-      "id": 7
+      "id": 7,
+      "expectedAnswer": [
+        {
+          "value": "🌐 Front End",
+          "as": 0
+        },
+        {
+          "value": "🧑‍🎨 Design",
+          "as": 1
+        },
+        {
+          "value": "🗂️ Product & Business Model",
+          "as": 2
+        },
+        {
+          "value": "🐪 Backend + Cairo",
+          "as": 3
+        }
+      ]
+    },
+    {
+      "name": "vertical-interests",
+      "label": "Verticals",
+      "question": "Select all the verticals below that you are interested in.",
+      "type": "stringArray",
+      "required": true,
+      "id": 12,
+      "expectedAnswer": [
+        {
+          "value": "💸 DeFi",
+          "as": 0
+        },
+        {
+          "value": "🖼️ NFTs",
+          "as": 1
+        },
+        {
+          "value": "🎮 Gaming",
+          "as": 2
+        },
+        {
+          "value": "🏗️ Infrastructure",
+          "as": 3
+        },
+        {
+          "value": "🛒 Consumer",
+          "as": 4
+        },
+        {
+          "value": "🪙 Tokenisation (RWAs etc)",
+          "as": 5
+        },
+        {
+          "value": "📷 Media",
+          "as": 6
+        },
+        {
+          "value": "🤖 AI / ML",
+          "as": 7
+        },
+        {
+          "value": "💳 Payments",
+          "as": 8
+        }
+      ]
     }
   ]
 }
