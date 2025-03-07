@@ -2,8 +2,6 @@
 
 Profile builder to match with mantors/mentees
 
-![image](https://github.com/Marchand-Nicolas/telegram-mentoring-bot/assets/60229704/bfdb0079-731b-4df3-9024-18a52df61dde)
-
  - [Installation](#installation)
  - [Usage](#usage)
 
@@ -12,7 +10,7 @@ Profile builder to match with mantors/mentees
 
 1. Clone the repository
 ```bash	
-git clone https://github.com/Marchand-Nicolas/telegram-mentoring-bot
+git clone https://github.com/mohnate/telegram-mentoring-bot
 ```
 
 2. Move to the project directory
